@@ -17,7 +17,7 @@ woodblock-print-inspired serif (bundled under `app/assets/fonts/`, SIL Open
 Font License — see `OFL.txt` there), to lean into the old Japan/China
 apothecary-diary mood. Watercolor/ink accents (koi, a folding fan, a vine
 flourish, a sparkle, a tulip) live under `app/assets/illustrations/` and
-decorate the header, sidebar, timer banner, and empty states.
+decorate the header, sidebar, timer banner, and empty states. Feel free to customize so it fits your style.
 
 ## Running it
 
