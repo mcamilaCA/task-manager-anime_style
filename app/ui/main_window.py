@@ -3,6 +3,7 @@
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QMainWindow, QVBoxLayout, QWidget
 
 from app import db
+from app.illustrations import KOI_WREATH, load_pixmap
 from app.ui.day_panel import DayPanelWidget
 from app.ui.month_calendar import MonthCalendar
 from app.ui.sidebar import Sidebar
@@ -36,9 +37,16 @@ class MainWindow(QMainWindow):
         right_layout.setContentsMargins(20, 18, 20, 18)
         right_layout.setSpacing(14)
 
+        title_row = QHBoxLayout()
+        title_row.setSpacing(10)
+        logo_label = QLabel()
+        logo_label.setPixmap(load_pixmap(KOI_WREATH, width=46))
+        title_row.addWidget(logo_label)
         title = QLabel("Apothecary's Almanac")
         title.setObjectName("appTitle")
-        right_layout.addWidget(title)
+        title_row.addWidget(title)
+        title_row.addStretch()
+        right_layout.addLayout(title_row)
 
         self.timer_banner = TimerBanner()
         self.timer_banner.stopRequested.connect(self._stop_timer_clicked)

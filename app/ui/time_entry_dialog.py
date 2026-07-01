@@ -31,7 +31,7 @@ class ManualEntryDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        layout.addWidget(QLabel("Task"))
+        layout.addWidget(self._heading("Task"))
         self.task_combo = QComboBox()
         tasks = db.list_tasks(conn, status="active") + db.list_tasks(conn, status="archived")
         if not tasks:
@@ -42,7 +42,7 @@ class ManualEntryDialog(QDialog):
             self.task_combo.addItem(label, userData=task.id)
         layout.addWidget(self.task_combo)
 
-        layout.addWidget(QLabel("Date"))
+        layout.addWidget(self._heading("Date"))
         self.date_edit = QDateEdit()
         self.date_edit.setCalendarPopup(True)
         self.date_edit.setDate(QDate(default_date.year, default_date.month, default_date.day))
@@ -84,7 +84,7 @@ class ManualEntryDialog(QDialog):
         layout.addWidget(self.preview_label)
         self._update_duration_preview()
 
-        layout.addWidget(QLabel("Note (optional)"))
+        layout.addWidget(self._heading("Note (optional)"))
         self.note_edit = QTextEdit()
         self.note_edit.setFixedHeight(60)
         layout.addWidget(self.note_edit)
@@ -99,6 +99,12 @@ class ManualEntryDialog(QDialog):
         btn_row.addWidget(cancel_btn)
         btn_row.addWidget(save_btn)
         layout.addLayout(btn_row)
+
+    @staticmethod
+    def _heading(text: str) -> QLabel:
+        label = QLabel(text)
+        label.setProperty("heading", True)
+        return label
 
     def _on_mode_toggled(self, checked: bool) -> None:
         self.start_edit.setVisible(not checked)

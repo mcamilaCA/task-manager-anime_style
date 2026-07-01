@@ -1,13 +1,40 @@
 """Small reusable widgets shared by month_calendar.py and task_dialog.py."""
 
 from datetime import date
+from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from app import theme
+from app.illustrations import load_pixmap
 from app.utils import format_duration
+
+
+def build_empty_state(illustration_path: Path, message: str, image_width: int = 96) -> QWidget:
+    """A centered illustration + caption, shown in place of a list when it
+    has nothing in it yet (no tasks, no time logged for the day)."""
+    widget = QWidget()
+    layout = QVBoxLayout(widget)
+    layout.setAlignment(Qt.AlignHCenter)
+    layout.setSpacing(10)
+    layout.addStretch()
+
+    image_label = QLabel()
+    image_label.setPixmap(load_pixmap(illustration_path, width=image_width))
+    image_label.setAlignment(Qt.AlignHCenter)
+    layout.addWidget(image_label)
+
+    text_label = QLabel(message)
+    text_label.setProperty("subtle", True)
+    text_label.setAlignment(Qt.AlignHCenter)
+    text_label.setWordWrap(True)
+    text_label.setMaximumWidth(220)
+    layout.addWidget(text_label, alignment=Qt.AlignHCenter)
+
+    layout.addStretch()
+    return widget
 
 
 class DayCell(QFrame):

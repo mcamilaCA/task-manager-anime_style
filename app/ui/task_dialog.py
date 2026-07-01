@@ -27,11 +27,11 @@ class TaskDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        layout.addWidget(QLabel("Name"))
+        layout.addWidget(self._heading("Name"))
         self.name_edit = QLineEdit(task.name if task else "")
         layout.addWidget(self.name_edit)
 
-        layout.addWidget(QLabel("Category"))
+        layout.addWidget(self._heading("Category"))
         self.category_combo = QComboBox()
         self.category_combo.setEditable(True)
         categories = sorted({t.category for t in db.list_tasks(conn) if t.category})
@@ -42,7 +42,7 @@ class TaskDialog(QDialog):
             self.category_combo.setCurrentText("")
         layout.addWidget(self.category_combo)
 
-        layout.addWidget(QLabel("Color"))
+        layout.addWidget(self._heading("Color"))
         initial_color = task.color if task else db.next_task_color(conn)
         self.color_picker = ColorSwatchPicker(db.TASK_COLOR_PALETTE, selected=initial_color)
         layout.addWidget(self.color_picker)
@@ -61,6 +61,12 @@ class TaskDialog(QDialog):
         btn_row.addWidget(cancel_btn)
         btn_row.addWidget(save_btn)
         layout.addLayout(btn_row)
+
+    @staticmethod
+    def _heading(text: str) -> QLabel:
+        label = QLabel(text)
+        label.setProperty("heading", True)
+        return label
 
     def _toggle_archive(self) -> None:
         if self.task.status == "archived":

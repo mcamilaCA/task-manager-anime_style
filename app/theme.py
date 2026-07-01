@@ -2,6 +2,22 @@
 Ghibli x Apothecary Diaries look: soft parchment, ink, herbal greens, a
 wax-seal terracotta for anything "live" (the running timer)."""
 
+from pathlib import Path
+
+from PySide6.QtGui import QFontDatabase
+
+FONTS_DIR = Path(__file__).parent / "assets" / "fonts"
+
+
+def load_bundled_fonts() -> None:
+    """Register the bundled Shippori Mincho weights so the QSS font-family
+    stacks below can find them by name. Safe to call once at app startup."""
+    if not FONTS_DIR.is_dir():
+        return
+    for font_file in FONTS_DIR.glob("*.ttf"):
+        QFontDatabase.addApplicationFont(str(font_file))
+
+
 # --- palette ---------------------------------------------------------------
 BACKGROUND = "#F4ECDC"      # parchment
 PANEL = "#FBF7EE"           # lighter parchment, card surfaces
@@ -13,7 +29,11 @@ BORDER = "#D8CBB0"          # aged paper edge
 TODAY = "#E8B86D"           # amber / turmeric — today highlight
 MUTED_INK = "#8A7F70"       # faded ink, for secondary/archived text
 
-FONT_SERIF = '"Hoefler Text", "Palatino", "Palatino Linotype", Georgia, serif'
+# "Shippori Mincho" is a Japanese woodblock-print-inspired serif (bundled in
+# app/assets/fonts, SIL OFL) — it's what gives headings/journal text the old
+# Japan/China apothecary-diary feel. The rest of the stack is the fallback if
+# it somehow fails to load.
+FONT_SERIF = '"Shippori Mincho", "Hiragino Mincho ProN", "Hoefler Text", "Palatino", Georgia, serif'
 FONT_SANS = '"Avenir Next", "Avenir", "SF Pro Rounded", "Futura", -apple-system, sans-serif'
 
 
@@ -31,17 +51,23 @@ def build_stylesheet() -> str:
 
     QLabel#appTitle {{
         font-family: {FONT_SERIF};
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 600;
+        letter-spacing: 1px;
         color: {INK};
         padding: 4px 2px;
     }}
 
     QLabel[heading="true"] {{
         font-family: {FONT_SERIF};
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 600;
         color: {INK};
+    }}
+
+    #journalNote {{
+        font-family: {FONT_SERIF};
+        font-size: 14px;
     }}
 
     QLabel[subtle="true"] {{

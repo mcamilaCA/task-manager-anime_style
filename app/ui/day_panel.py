@@ -17,6 +17,8 @@ from PySide6.QtWidgets import (
 )
 
 from app import db
+from app.illustrations import TULIP, VINE_FLOURISH, load_pixmap
+from app.ui.widgets import build_empty_state
 from app.utils import format_duration, format_time_range
 
 
@@ -59,11 +61,25 @@ class DayPanelWidget(QFrame):
         self.entries_list.setMaximumHeight(220)
         layout.addWidget(self.entries_list)
 
+        self.empty_state = build_empty_state(
+            TULIP, "Nothing logged for this day yet.", image_width=72
+        )
+        self.empty_state.setMaximumHeight(220)
+        layout.addWidget(self.empty_state)
+
+        journal_row = QHBoxLayout()
+        journal_row.setSpacing(6)
+        vine_icon = QLabel()
+        vine_icon.setPixmap(load_pixmap(VINE_FLOURISH, height=22))
+        journal_row.addWidget(vine_icon)
         journal_label = QLabel("What did you get up to today?")
         journal_label.setProperty("heading", True)
-        layout.addWidget(journal_label)
+        journal_row.addWidget(journal_label)
+        journal_row.addStretch()
+        layout.addLayout(journal_row)
 
         self.note_edit = _NoteEdit()
+        self.note_edit.setObjectName("journalNote")
         self.note_edit.setPlaceholderText("Gathered herbs, brewed tea, read a little...")
         self.note_edit.focusLost.connect(self._save_note)
         layout.addWidget(self.note_edit)
@@ -84,6 +100,8 @@ class DayPanelWidget(QFrame):
         for entry in entries:
             total += entry.duration_seconds
             self._add_entry_row(entry)
+        self.entries_list.setVisible(bool(entries))
+        self.empty_state.setVisible(not entries)
         self.total_label.setText(f"Total: {format_duration(total)}")
 
         note = db.get_day_note(self.conn, self.current_date.isoformat())

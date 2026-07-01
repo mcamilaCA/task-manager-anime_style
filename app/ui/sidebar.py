@@ -14,7 +14,9 @@ from PySide6.QtWidgets import (
 )
 
 from app import db
+from app.illustrations import FOLDING_FAN, TULIP, load_pixmap
 from app.models import Task
+from app.ui.widgets import build_empty_state
 
 
 class TaskRow(QFrame):
@@ -82,6 +84,9 @@ class Sidebar(QWidget):
         layout.setSpacing(10)
 
         header_row = QHBoxLayout()
+        fan_icon = QLabel()
+        fan_icon.setPixmap(load_pixmap(FOLDING_FAN, width=30))
+        header_row.addWidget(fan_icon)
         title = QLabel("Quest Log")
         title.setProperty("heading", True)
         header_row.addWidget(title)
@@ -94,6 +99,11 @@ class Sidebar(QWidget):
 
         self.active_list = QListWidget()
         layout.addWidget(self.active_list)
+
+        self.empty_state = build_empty_state(
+            TULIP, "Your Quest Log is empty.\nAdd a task to begin.", image_width=84
+        )
+        layout.addWidget(self.empty_state)
 
         self.archived_toggle = QPushButton("Archived ▾")
         self.archived_toggle.clicked.connect(self._toggle_archived)
@@ -117,8 +127,11 @@ class Sidebar(QWidget):
 
     def refresh(self, running_task_id: int | None = None) -> None:
         self.active_list.clear()
-        for task in db.list_tasks(self.conn, status="active"):
+        active_tasks = db.list_tasks(self.conn, status="active")
+        for task in active_tasks:
             self._add_row(self.active_list, task, running_task_id == task.id)
+        self.active_list.setVisible(bool(active_tasks))
+        self.empty_state.setVisible(not active_tasks)
 
         self.archived_list.clear()
         for task in db.list_tasks(self.conn, status="archived"):

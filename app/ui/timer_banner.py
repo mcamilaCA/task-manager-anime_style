@@ -10,6 +10,8 @@ from datetime import datetime
 from PySide6.QtCore import QElapsedTimer, QTimer, Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
+from app import theme
+from app.illustrations import SPARKLE, load_pixmap
 from app.utils import format_duration, parse_datetime
 
 
@@ -29,6 +31,10 @@ class TimerBanner(QFrame):
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(14, 10, 14, 10)
+        layout.setSpacing(8)
+        sparkle_label = QLabel()
+        sparkle_label.setPixmap(load_pixmap(SPARKLE, width=18, tint=theme.PANEL))
+        layout.addWidget(sparkle_label)
         self.label = QLabel("")
         layout.addWidget(self.label)
         layout.addStretch()
@@ -54,4 +60,4 @@ class TimerBanner(QFrame):
 
     def _update_label(self) -> None:
         elapsed_seconds = (self._elapsed.elapsed() + self._base_offset_ms) // 1000
-        self.label.setText(f"🍵 Now tracking: {self._task_name}   {format_duration(elapsed_seconds)}")
+        self.label.setText(f"Now tracking: {self._task_name}   {format_duration(elapsed_seconds)}")
